@@ -1,0 +1,43 @@
+name: Publicar no Threads via DOCX
+
+on:
+  schedule:
+    # Agendado para rodar todos os dias às 12:00 UTC (09:00 no horário de Brasília)
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Permite disparar a execução manualmente pelo painel do GitHub
+
+jobs:
+  run-and-commit:
+    runs-on: ubuntu-latest
+
+    # Permissão necessária para o bot fazer o commit e push do .docx atualizado
+    permissions:
+      contents: write
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar o script do Threads
+        env:
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: python main.py
+
+      - name: Salvar alterações no mensagens.docx (Commit & Push)
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add mensagens.docx
+          # Faz o commit apenas se o arquivo .docx sofreu alteração
+          git diff --quiet && git diff --staged --quiet || (git commit -m "bot: atualiza mensagens.docx apos publicacao" && git push)
