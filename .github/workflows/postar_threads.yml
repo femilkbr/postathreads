@@ -2,15 +2,15 @@ name: Publicar no Threads via DOCX
 
 on:
   schedule:
-    # Agendado para rodar todos os dias às 12:00 UTC (09:00 no horário de Brasília)
+    # Executa todos os dias às 12:00 UTC (09:00 no horário de Brasília)
     - cron: '0 12 * * *'
-  workflow_dispatch: # Permite disparar a execução manualmente pelo painel do GitHub
+  workflow_dispatch: # Permite rodar manualmente pelo painel do GitHub sempre que quiser
 
 jobs:
   run-and-commit:
     runs-on: ubuntu-latest
 
-    # Permissão necessária para o bot fazer o commit e push do .docx atualizado
+    # Permissão necessária para o bot fazer commit/push do .docx atualizado no repositório
     permissions:
       contents: write
 
@@ -26,18 +26,19 @@ jobs:
       - name: Instalar dependências
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install requests python-docx python-dotenv
 
       - name: Executar o script do Threads
         env:
+          # Repassa os Secrets configurados no GitHub para o ambiente do Python
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
           ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
-        run:  python postar_threads.py arquivo.docx
+        run: python postar_threads.py arquivo.docx
 
-      - name: Salvar alterações no mensagens.docx (Commit & Push)
+      - name: Salvar alterações no arquivo .docx (Commit & Push)
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add mensagens.docx
-          # Faz o commit apenas se o arquivo .docx sofreu alteração
-          git diff --quiet && git diff --staged --quiet || (git commit -m "bot: atualiza mensagens.docx apos publicacao" && git push)
+          git add arquivo.docx
+          # Faz o commit apenas se o arquivo .docx sofreu alteração (post foi removido)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "bot: atualiza arquivo.docx apos publicacao" && git push)
