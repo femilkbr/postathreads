@@ -32,7 +32,7 @@ jobs:
         env:
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
           ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
-        run: python main.py
+        run:  python postar_threads.py arquivo.docx
 
       - name: Salvar alterações no mensagens.docx (Commit & Push)
         run: |
