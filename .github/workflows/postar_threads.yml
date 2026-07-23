@@ -2,15 +2,14 @@ name: Publicar no Threads via DOCX
 
 on:
   schedule:
-    # Executa todos os dias às 12:00 UTC (09:00 no horário de Brasília)
     - cron: '0 12 * * *'
-  workflow_dispatch: # Permite rodar manualmente pelo painel do GitHub sempre que quiser
+  workflow_dispatch:
 
 jobs:
   run-and-commit:
     runs-on: ubuntu-latest
+    environment: threads  # <-- ESSA LINHA É NECESSÁRIA PARA LER ENVIRONMENT SECRETS!
 
-    # Permissão necessária para o bot fazer commit/push do .docx atualizado no repositório
     permissions:
       contents: write
 
@@ -30,7 +29,6 @@ jobs:
 
       - name: Executar o script do Threads
         env:
-          # Repassa os Secrets configurados no GitHub para o ambiente do Python
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
           ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
         run: python postar_threads.py arquivo.docx
@@ -40,5 +38,4 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add arquivo.docx
-          # Faz o commit apenas se o arquivo .docx sofreu alteração (post foi removido)
           git diff --quiet && git diff --staged --quiet || (git commit -m "bot: atualiza arquivo.docx apos publicacao" && git push)
