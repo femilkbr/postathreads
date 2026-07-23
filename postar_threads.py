@@ -47,6 +47,12 @@ import requests
 from docx import Document
 from dotenv import load_dotenv
 
+# Carrega do .env se existir localmente; no GitHub Actions, lê das env vars do runner
+load_dotenv()
+
+THREADS_USER_ID = os.getenv("THREADS_USER_ID")
+THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN")
+
 GRAPH_API_BASE = "https://graph.threads.net/v1.0"
 MAX_CHARS = 500  # limite atual de caracteres por post no Threads
 SEPARADOR_PADRAO = "---"  # linha que marca o fim de um bloco de texto no .docx
