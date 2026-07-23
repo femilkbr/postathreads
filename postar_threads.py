@@ -10,7 +10,7 @@ from docx import Document
 
 # Obtém as credenciais das variáveis de ambiente e remove espaços em branco extras
 THREADS_USER_ID = os.getenv("THREADS_USER_ID", "").strip()
-THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN", "").strip()
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN", "").strip()
 
 def publicar_no_threads(texto: str) -> bool:
     """
